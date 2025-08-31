@@ -1,0 +1,510 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tableau des Administrateurs</title>
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        /* Ajoutez vos styles CSS personnalisés ici */
+        body {
+            background: linear-gradient(135deg, #007bff, #6f42c1, #f0f0f0);
+            background-size: 400% 400%;
+            animation: gradientBackground 15s ease infinite;
+        }
+
+        @keyframes gradientBackground {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Full-page loading container */
+        #loader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+
+        /* Creative loading animation */
+        .loader-animation {
+            display: flex;
+            justify-content: space-between;
+            width: 120px;
+        }
+
+        .loader-animation div {
+            width: 25px;
+            height: 25px;
+            background-color: #007bff;
+            border-radius: 50%;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .loader-animation div:nth-child(1) {
+            animation-delay: -0.3s;
+            background-color: #6f42c1;
+        }
+
+        .loader-animation div:nth-child(2) {
+            animation-delay: -0.15s;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+        .selected {
+    background-color: #ddd6d6;
+}
+    </style>
+</head>
+<body class="sb-nav-fixed">
+    <!-- Loading screen -->
+    <div id="loader">
+        <div class="loader-animation">
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+
+    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+        <!-- Navbar Brand-->
+        <a class="navbar-brand ps-3" href="{% url 'index' %}">Gestion De Parc</a>
+        <!-- Sidebar Toggle-->
+        <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <!-- Navbar-->
+        <ul class="navbar-nav ms-auto ms-md-0 me-3 me-lg-4">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-user fa-fw"></i>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </nav>
+    
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Core</div>
+                        <a class="nav-link" href="{% url 'index' %}">
+                            <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                            Dashboard
+                        </a>
+                        <div class="sb-sidenav-menu-heading">Interface</div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            donnes
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                               <a class="nav-link" href="{% url 'tables' %}">Tableau d'Équipement</a>
+                                <a class="nav-link" href="{% url 'membre' %}">Tableau d'Employé</a>
+                               <a class="nav-link" href="{% url 'administration' %}">Tableau d'Administration</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i class="fas fa-book-open"></i></div>
+                            Pages
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo" data-bs-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#pagesCollapseAuth" aria-expanded="false" aria-controls="pagesCollapseAuth">
+                                    element
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link" href="{% url 'logout' %}">Login</a>
+                                        <a class="nav-link" href="{% url 'charts' %}">statistiques</a>
+                                        
+                                    </nav>
+                                </div>
+                               <div>
+
+                               </div>
+                               <div>
+
+                               </div>
+                        </div>
+                        <div></div>
+                       
+                            <div></div>
+                        
+                            <div></div>
+                            
+                    </div>
+                </div>
+                <div class="sb-sidenav-footer">
+                    <div class="small">Logged in as:</div>
+                    {{user.email}}
+                </div>
+            </nav>
+        </div>
+            <div id="layoutSidenav_content">
+                <main>
+                    <div class="container-fluid px-4">
+                        <h1 class="mt-4">Tableau des Administrateurs</h1>
+                        <ol class="breadcrumb mb-4">
+                            <li class="breadcrumb-item active">Tableau des Administrateurs</li>
+                        </ol>
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table id="datatablesSimple">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nom</th>
+                                                <th>Prénom</th>
+                                                <th>Rôle</th>
+                                                <th>Email</th>
+                                                <th>ID d'equipement</th>
+                                                <th>Date de debut</th>
+                                                <th>Date de fin</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                    {% for admin in admin_list %}
+                                    <tr data-id="{{ admin.id }}" 
+                                    data-nom="{{ admin.nom|escapejs }}" 
+                                    data-prenom="{{ admin.prenom|escapejs }}" 
+                                    data-role="{{ admin.role|escapejs }}" 
+                                    data-email="{{ admin.email|escapejs }}" 
+                                    data-equipement_id="{{ admin.equipement_id|escapejs }}" 
+                                    data-date_debut="{{ admin.date_debut|escapejs }}" 
+                                    data-date_fin="{{ admin.date_fin|escapejs }}">
+                                        <td>{{ admin.id }}</td>
+                                        <td>{{ admin.nom }}</td>
+                                        <td>{{ admin.prenom }}</td>
+                                        <td>{{ admin.role }}</td>
+                                        <td>{{ admin.email }}</td>
+                                        <td>{{ admin.equipement_id}}</td>
+                                        <td>{{ admin.date_debut|date:"Y/m/d" }}</td>
+                                        <td>{{ admin.date_fin|date:"Y/m/d" }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="8">Aucun administrateur trouvé.</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <button id="btnAdd" class="btn btn-primary" disabled>Ajouter</button>
+                        <button id="btnDelete" class="btn btn-danger" disabled>Supprimer</button>
+                        <button id="btnDisplay" class="btn btn-info" disabled>Afficher</button>
+                        <button id="btnModify" class="btn btn-warning btn-modify" disabled >Modifier</button>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+        <footer class="py-4 bg-light mt-auto">
+            <div class="container-fluid px-4">
+                <div class="d-flex align-items-center justify-content-between small">
+                    <div class="text-muted">© 2024 - Gestion De Parc</div>
+                   
+            </div>
+        </footer>
+    </div>
+</div>
+                               
+     <!-- Popper.js and Bootstrap JS (necessary for dropdowns and collapse) -->
+     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js"></script>
+     <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
+
+        <script>
+            window.addEventListener('load', function () {
+                setTimeout(function () {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('content').style.display = 'block';
+                }, 2000); // Adjust the delay as needed
+            });
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+    var sidebarToggle = document.getElementById("sidebarToggle");
+    sidebarToggle.addEventListener("click", function () {
+        document.body.classList.toggle("sb-sidenav-toggled");
+    });
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const table = document.getElementById('datatablesSimple');
+    let selectedRow = null;
+
+    // Function to clear selection and disable buttons
+    function clearSelection() {
+        if (selectedRow) {
+            selectedRow.classList.remove('selected');
+            selectedRow = null;
+            
+            document.getElementById('btnDisplay').disabled = true;
+            
+        }
+    }
+
+    // Add event listener for table row click
+    table.addEventListener('click', function(event) {
+        const row = event.target.closest('tr');
+        if (row && row !== selectedRow) {
+            clearSelection();
+            selectedRow = row;
+            selectedRow.classList.add('selected');
+           
+            document.getElementById('btnDisplay').disabled = false;
+            
+        }
+    });
+        
+            
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+     
+            document.getElementById('btnDisplay').addEventListener('click', function() {
+                if (selectedRow) {
+                    const equipmentId = selectedRow.getElementsByTagName('td')[0].innerText;
+                    if (equipmentId) {
+                        fetch(`/get_admin/${equipmentId}/`, {
+                            method: 'GET',
+                            headers: {
+                                'X-CSRFToken': getCookie('csrftoken'),
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => response.json())
+                          .then(data => {
+                              if (data.error) {
+                                  console.error('Failed to get admin:', data.error);
+                              } else {
+                                  // Assigner les valeurs aux éléments de la modal
+                                  document.getElementById('modalId').innerText = data.id || 'Non disponible';
+                                  document.getElementById('modalName').innerText = data.nom || 'Non disponible';
+                                  document.getElementById('modalType').innerText = data.prenom || 'Non disponible';
+                                  document.getElementById('modalEquipment').innerText = data.role || 'Non disponible';
+                                  document.getElementById('modalBrand').innerText = data.email || 'Non disponible';
+                                  document.getElementById('modalPurchaseDate').innerText = data.equipement_id || 'Non disponible';
+                                  document.getElementById('modalStatus').innerText = data.date_debut || 'Non disponible';
+                                  document.getElementById('modalUser').innerText = data.date_fin || 'Non disponible';
+        
+                                  // Afficher la modal
+                                  new bootstrap.Modal(document.getElementById('equipmentModal')).show();
+                              }
+                          }).catch(error => console.error('Error:', error));
+                    }
+                }
+            });
+        });
+        </script>
+        <script>
+            // Boucle sur tous les administrateurs et affiche leurs emails dans la console
+            {% for admin in admin_list %}
+                console.log("Admin email: {{ admin.email }}");
+            {% endfor %}
+        
+            // Affiche également l'email de l'utilisateur connecté dans la console
+            console.log("User email: {{ user.email }}");
+        </script>
+        
+        <!-- Vérification si l'email d'un admin correspond à l'email de l'utilisateur -->
+        {% for admin in admin_list %}
+    {% if admin.email == user.email %}
+        <!-- Si l'utilisateur est un admin, il peut faire le CRUD -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const table = document.getElementById('datatablesSimple');
+                let selectedRow = null;
+
+                // Function to clear selection and disable buttons
+                function clearSelection() {
+                    if (selectedRow) {
+                        selectedRow.classList.remove('selected');
+                        selectedRow = null;
+                        document.getElementById('btnDelete').disabled = true;
+                        document.getElementById('btnDisplay').disabled = true;
+                        document.getElementById('btnModify').disabled = true;
+                    
+                    }
+                }
+
+                // Add event listener for table row click
+                table.addEventListener('click', function(event) {
+                    const row = event.target.closest('tr');
+                    if (row && row !== selectedRow) {
+                        clearSelection();
+                        selectedRow = row;
+                        selectedRow.classList.add('selected');
+                        document.getElementById('btnDelete').disabled = false;
+                        document.getElementById('btnDisplay').disabled = false;
+                        document.getElementById('btnModify').disabled = false;
+                        
+                       
+                    }
+                });
+
+                // Event handler for delete button
+                document.getElementById('btnDelete').addEventListener('click', function() {
+                    if (selectedRow) {
+                        const membreId = selectedRow.getElementsByTagName('td')[0].innerText;
+                        if (membreId) {
+                            fetch(`/delete_admin/${membreId}/`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRFToken': getCookie('csrftoken'),
+                                    'Content-Type': 'application/json'
+                                }
+                            }).then(response => response.json())
+                              .then(data => {
+                                  if (data.status === 'success') {
+                                      selectedRow.remove();
+                                      document.getElementById('btnDelete').disabled = true;
+                                      document.getElementById('btnDisplay').disabled = true;
+                                      document.getElementById('btnModify').disabled = true;
+                                  } else {
+                                      console.error('Failed to delete:', data.message);
+                                  }
+                              }).catch(error => console.error('Error:', error));
+                        } else {
+                            console.error('No admin ID found');
+                        }
+                    }
+                });
+
+                // Event handler for modify button
+                document.getElementById('btnModify').addEventListener('click', function() {
+                    if (selectedRow) {
+                        const equipmentId = selectedRow.getElementsByTagName('td')[0].innerText;
+                        if (equipmentId) {
+                            window.location.href = `/ajout_admin/${equipmentId}/`;
+                        } else {
+                            console.error('No equipment ID found');
+                        }
+                    } else {
+                        alert('Veuillez sélectionner une ligne à modifier.');
+                    }
+                });
+
+                // Event handler for add button
+            
+                document.getElementById('btnAdd').addEventListener('click', function() {
+                    window.location.href = "{% url 'ajout_admin' %}";
+                    
+                });
+
+                function getCookie(name) {
+                    let cookieValue = null;
+                    if (document.cookie && document.cookie !== '') {
+                        const cookies = document.cookie.split(';');
+                        for (let i = 0; i < cookies.length; i++) {
+                            const cookie = cookies[i].trim();
+                            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                break;
+                            }
+                        }
+                    }
+                    return cookieValue;
+                }
+
+            });
+        </script>
+    {% else %}
+        <!-- Si l'utilisateur n'est pas un admin, afficher une alerte -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Event handler for add button
+                document.getElementById('btnAdd').addEventListener('click', function() {
+                   
+                    
+                });
+
+                // Event handler for modify button
+                document.getElementById('btnModify').addEventListener('click', function() {
+                    
+                });
+
+                // Event handler for delete button
+                document.getElementById('btnDelete').addEventListener('click', function() {
+                   
+                });
+
+                // Disable buttons for non-admin users
+                document.getElementById('btnDelete').disabled = true;
+                document.getElementById('btnModify').disabled = true;
+                document.getElementById('btnAdd').disabled = false;
+            });
+        </script>
+    {% endif %}
+{% endfor %}
+
+
+          <div class="modal fade" id="equipmentModal" tabindex="-1" aria-labelledby="equipmentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="equipmentModalLabel">Détails d'Admin</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p><strong>ID:</strong> <span id="modalId"></span></p>
+                        <p><strong>Nom:</strong> <span id="modalName"></span></p>
+                        <p><strong>prenom:</strong> <span id="modalType"></span></p>
+                        <p><strong>role:</strong> <span id="modalEquipment"></span></p>
+                        <p><strong>email:</strong> <span id="modalBrand"></span></p>
+                        <p><strong>id_equipement:</strong> <span id="modalPurchaseDate"></span></p>
+                        <p><strong>date_debut:</strong> <span id="modalStatus"></span></p>
+                        <p><strong>date_fin:</strong> <span id="modalUser"></span></p>
+                      
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                    </div>
+                </div>
+            </div>
+            </div>
+    </body>
+</html>
